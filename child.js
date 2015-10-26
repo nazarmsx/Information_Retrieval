@@ -2,7 +2,9 @@ console.log("Child Process " + process.argv[2] + " executed." );
 
 //processFiles(process.argv[2] ,process.argv[3] )
 var fs=require('fs');
-var file= fs.readFileSync(process.argv[2]+'files.txt','utf-8');
+var config_data =JSON.parse(fs.readFileSync("config.json",'utf-8'));
+
+var file= fs.readFileSync(config_data.output_file_path+"/"+process.argv[2]+'files.txt','utf-8');
 processFiles(JSON.parse(file),process.argv[2])
 
 function processFiles(fileNames,number)
@@ -46,7 +48,7 @@ function processFiles(fileNames,number)
         return a[0]>b[0]?1:a[0]<b[0]?-1:0;
     });
 
-    var wstream = fs.createWriteStream('F://'+number+'index.txt');
+    var wstream = fs.createWriteStream(config_data.output_file_path+"/"+number+'index.txt');
     for (var j=0;j<outputarray.length;j++) {
         wstream.write(JSON.stringify(outputarray[j])+'\n');
     }

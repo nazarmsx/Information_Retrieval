@@ -291,11 +291,11 @@ function Document(documentName,documentContents)
 }
 module.exports.searchEngine=searchEngine;
 
-//test();
+test();
 function test()
 {
     var indexTypes=[{name:'Inverted index',indexFunc:buildIndex},{name:'Two-word index',indexFunc:buildTwoWordsIndex},{name:'Cordinateindex',indexFunc:buildCordinateIndex}];
-    var files=readAllFilesInDir('./newfiles/');
+    var files=readAllFilesInDir('F://Little//Rowling  J. K//');
     var stats=[];
     var fs = require('fs');
 

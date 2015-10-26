@@ -1,54 +1,23 @@
-var searchEngine=require('./app.js');
-var searchEngineInstance = new searchEngine.searchEngine;
+var fs=require("fs");
+var config_data = JSON.parse(fs.readFileSync("config.json", 'utf-8'));
 
-var indexData=(searchEngineInstance.buildIndex('./files/'));
-var index=indexData.index;
-var fileCodes=searchEngineInstance.buildIndex('./files/').docNames;
+var index=JSON.parse(fs.readFileSync(config_data.output_file_path+"/index.txt",'utf-8')).data;
+var fileCodes=JSON.parse(fs.readFileSync(config_data.output_file_path+"/filesCodes.txt",'utf-8')).files;
 
 
-var http = require('http') // http module
-    , qs = require('qs'); // querystring parser
-var express = require('express');
-var app = express();
+
 
 var termsIndexes=[];
  for(var i=0;i<index.length;i++)
  {
-     termsIndexes[index[i].term]=i;
+     termsIndexes[index[i][0]]=i;
  }
+//console.log(termsIndexes);
 
-app.all('/', function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    next();
-});
-app.get('/', function (req, res,next) {
-    res.send('Hello World!');
-});
-app.get("/query/:q",function(request, response,next){
-    var q = request.params.q;
-    response.writeHead(200, {"Access-Control-Allow-Origin": "*","Access-Control-Allow-Headers": "X-Requested-With"});
-     var result=getFileNames(q);
-    console.log(JSON.stringify(result));
 
-    if(result != "error" && result.length>0 ){
-    response.write(JSON.stringify(result));
-    }
-    else
-    {
-        response.write('No data!');
-    }
 
-    response.send();
-});
-var server = app.listen(5555,"0.0.0.0", function () {
-    var host = server.address().address;
-    var port = server.address().port;
+var resultDocuments=getFileNames('nimbus');
 
-    console.log('Example app listening at http://95.67.52.25:%s',port);
-});
-
-var resultDocuments=getFileNames('a');
 for  (var i=0;i<resultDocuments.length;++i)
 {
     resultDocuments[i]=fileCodes[resultDocuments[i]];
@@ -70,7 +39,7 @@ function getFileNames(query)
         if(checkToken( terms[k])) {
 
             if(index[termsIndexes[terms[k]]]){ //not such word at index
-            postingLists[terms[k]] = index[termsIndexes[terms[k]]].postingList}
+            postingLists[terms[k]] = index[termsIndexes[terms[k]]][1]}
             else
             {
                 postingLists[terms[k]]=[];
