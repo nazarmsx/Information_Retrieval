@@ -1,0 +1,21 @@
+body{padding:50px;font:14px "Lucida Grande",Helvetica,Arial,sans-serif}
+a{color:#00B7FF}
+
+.row-centered {
+    text-align:center;
+}
+.col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+}
+input[type=text]
+{
+    width:500px;
+    height: 30px;
+    font-size: 18px;
+    margin-top: 50px;
+}
