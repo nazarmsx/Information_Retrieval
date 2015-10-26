@@ -13,6 +13,13 @@
     "hbs": "~3.1.0",
     "less-middleware": "1.0.x",
     "morgan": "~1.6.1",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.3.0",
+    "line-by-line": "*",
+    "collections": "*",
+    "timsort": "*",
+    "recursive-readdir": "*",
+    "natural": "*",
+    "pg": "*",
+    "async": "*"
   }
 }
