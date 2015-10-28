@@ -141,7 +141,7 @@ function readDirectory() {
         }
     );
 }
-dispatcher();
+//dispatcher();
 function dispatcher() {
     var fs = require('fs'),
         config_data = JSON.parse(fs.readFileSync("config.json", 'utf-8'));
@@ -200,7 +200,7 @@ function dispatcher() {
         }
     });
 }
-//merge(['f://0index.txt','f://1index.txt','f://2index.txt','f://3index.txt']);
+merge(['f://temp/0index.txt','f://temp/1index.txt','f://temp//2index.txt','f://temp/3index.txt','f://temp/4index.txt']);
 function merge(partialIndex) {
     var fs = require('fs');
     console.log(partialIndex);
@@ -222,11 +222,11 @@ function merge(partialIndex) {
         var temp = dict.keys();
 
         //console.log("Before:"+dict.length);
-        for (var k = 0; k < temp.length * 0.5; k++) {
+        for (var k = 0; k < temp.length * 0.3; k++) {
             wstream.write(JSON.stringify([temp[k], dict.get(temp[k])]) + "," + "\n");
             dict.delete(temp[k]);
         }
-        //console.log("After:"+dict.length);
+      //  console.log("After:"+dict.length);
 
         temp = null;
         for (var k = readers.length - 1; k >= 0; k--) {
@@ -238,7 +238,7 @@ function merge(partialIndex) {
     };
 
     var counter = 0,
-        barrier = 250;
+        barrier = 200;
 
     for (var i = 0; i < partialIndex.length; ++i) {
 
@@ -256,7 +256,7 @@ function merge(partialIndex) {
             lr.on('line', function (line) {
                 var temp = JSON.parse(line);
                 // ii;
-                //console.log(temp[0]+": doc"+i+" number:"+readers[i].counter++);
+                //console.log(temp[0]+": doc"+ii+" number:"+readers[ii].counter);
 //console.log(ii);
                 //   console.log("Dict:"+ dict.length);
                 //   console.log("Counter:"+ counter);
@@ -271,7 +271,7 @@ function merge(partialIndex) {
 
                 if (++readers[ii].counter > barrier) {
                     //console.log("reader:"+ii+" was paused with couner:"+readers[ii].counter);
-                    //readers[ii].pause();
+                  //  readers[ii].pause();
                     readers[ii].paused = true;
                 }
                 if (readers.every(function (elem) {
@@ -291,12 +291,14 @@ function merge(partialIndex) {
                     //wstream.write(JSON.stringify(dict.entries()));
                     var index = dict.entries();
                     for (var j = 0; j < index.length-1; j++) {
-                        wstream.write(JSON.stringify(index[j]) + ",");
+                        wstream.write(JSON.stringify(index[j]) + ",\n");
                     }
-                    wstream.write(JSON.stringify(index[index.length-1]) );
+                    wstream.write(JSON.stringify(index[index.length-1]+"\n") );
                     wstream.write("]}");
                     wstream.end()
-                    console.timeEnd("----------TOTAL TIME:--------------");
+                    setTimeout(temp,4000);
+
+                    //console.timeEnd("----------TOTAL TIME:--------------");
                 }
 
 
@@ -326,4 +328,125 @@ function split(a, n) {
         i += size;
     }
     return out;
+}
+
+
+//another_merge(['f://temp/0index.txt','f://temp/1index.txt','f://temp//2index.txt','f://temp/3index.txt','f://temp/4index.txt']);
+//another_merge(['f://temp/0index.txt','f://temp/1index.txt']);
+
+function another_merge(partialIndex) {
+    var fs = require('fs');
+    console.log(partialIndex);
+    var config_data = JSON.parse(fs.readFileSync("config.json", 'utf-8'));
+
+    var filesAlreadyReaded = 0;
+    console.log("Merge begins.");
+    var SortedMap = require("collections/sorted-array-map"),
+        FastSet = require("collections/fast-set"),
+        fs = require('fs'),
+        async = require('async'),
+        dict = new SortedMap(),
+        wstream = fs.createWriteStream(config_data.output_file_path+"/" + "index.txt"),
+        readers = [],
+        buffers=[],
+        counters=[];
+    wstream.write('{"data":[');
+
+    var send_data = function () {
+
+        var min_index=0
+        for (var j=1;j<buffers.length;++j)
+        {
+            if(buffers[counters[j]][0]<buffers[counters[min_index]][0]){
+                min_index=j;
+            }
+        }
+        wstream.write(JSON.stringify(buffers[counters[min_index]])+"\n");
+        temp = null;
+        for (var k = readers.length - 1; k >= 0; k--) {
+
+            readers[k].resume();
+            readers[k].paused = false;
+        }
+
+    };
+
+    var counter = 0,
+        barrier = 20;
+
+    for (var i = 0; i < partialIndex.length; ++i) {
+
+        var LineByLineReader = require('line-by-line'),
+            lr = new LineByLineReader(partialIndex[i]);
+        counters[i]=0;
+        readers.push(lr);
+        readers[i].counter = 0;
+
+        !function outer(ii) {
+
+            lr.on('error', function (err) {
+                // 'err' contains error object
+            });
+            lr.on('line', function (line) {
+                var temp = JSON.parse(line);
+                buffers[ii].push[temp];
+                temp = null;
+                counter++;
+
+                if (++readers[ii].counter > barrier) {
+                    //console.log("reader:"+ii+" was paused with couner:"+readers[ii].counter);
+                    readers[ii].pause();
+                    readers[ii].paused = true;
+                }
+                if (readers.every(function (elem) {
+                        return elem.paused;
+                    })) {
+                    //console.log("________________PASSED_");
+                    barrier += barrier;
+                    send_data();
+
+                }
+
+            });
+            lr.on('end', function () {
+                // console.log("Readed "+ii);
+                if (++filesAlreadyReaded == partialIndex.length) {
+                    //wstream.write(JSON.stringify(dict.entries()));
+                    var index = dict.entries();
+                    for (var j = 0; j < index.length-1; j++) {
+                        wstream.write(JSON.stringify(index[j]) + ",\n");
+                    }
+                    wstream.write(JSON.stringify(index[index.length-1]) );
+                    wstream.write("]}");
+                    wstream.end();
+
+                    setTimeout(temp,4000);
+
+
+                }
+
+
+            });
+
+        }(i);
+    }
+
+
+
+}
+
+function temp()
+{
+    var fs=require("fs");
+    var config_data =JSON.parse(fs.readFileSync("config.json",'utf-8'));
+//console.log(fs.readFileSync(config_data.output_file_path+"/index.txt",'utf-8'));
+    var index=JSON.parse(fs.readFileSync(config_data.output_file_path+"/index.txt",'utf-8')).data;
+    for(var i=0;i<index.length-1;++i)
+    {
+        if(index[i][0]>index[i+1][0])
+        {
+            console.log("Erro at index :"+i+" "+index[i][0]+">"+index[i+1][0]);
+        }
+
+    }
 }
