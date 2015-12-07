@@ -87,7 +87,7 @@ function tokenStream(directory, ontoken, onend) {
 }
 
 
-//readDirectory();
+readDirectory();
 function readDirectory() {
     console.time("sync_index");
     console.time("read_files");
@@ -95,7 +95,7 @@ function readDirectory() {
     var fs = require('fs');
     var natural = require('natural'),
         tokenizer = new natural.AggressiveTokenizerRu();
-    recursive('F:/data', function (err, files) {
+    recursive('F:/little', function (err, files) {
 
             var i = 0,
                 fileQuantity = files.length;
@@ -108,13 +108,15 @@ function readDirectory() {
                 var words = tokenizer.tokenize(file),
                     wordsLength = words.length;
                 for (var k = 0; k < wordsLength; ++k) {
-                    var value = dict.get(words[k]);
+                    var value = dict.get(words[k].toLowerCase());
                     if (value) {
-                        if (i != value[value.length - 1])
-                            value.push(i);
+                        if (i != value[value.length - 1][0])
+                            value.push([i,1]);
+                        else
+                            value[value.length - 1][1]++;
                     }
                     else {
-                        dict.add([i], words[k].toLowerCase());
+                        dict.add([[i,1]], words[k].toLowerCase());
                     }
                 }
 
@@ -132,8 +134,7 @@ function readDirectory() {
 
             console.time("write_index");
             var wstream = fs.createWriteStream('F://index_.txt');
-            // console.log(JSON.stringify(dict.toArray()));
-            wstream.write(JSON.stringify(dict.toJSON()));
+             wstream.write(JSON.stringify(dict.toJSON()));
             wstream.end();
             console.timeEnd("write_index");
             console.timeEnd("sync_index");
@@ -200,7 +201,10 @@ function dispatcher() {
         }
     });
 }
-merge(['f://temp/0index.txt','f://temp/1index.txt','f://temp//2index.txt','f://temp/3index.txt','f://temp/4index.txt']);
+
+//temp();
+//merge(['f://temp/0index.txt','f://temp/1index.txt','f://temp//2index.txt','f://temp/3index.txt','f://temp/4index.txt']);
+//merge(['f://temp/0index.txt','f://temp/1index.txt']);
 function merge(partialIndex) {
     var fs = require('fs');
     console.log(partialIndex);
@@ -296,7 +300,7 @@ function merge(partialIndex) {
                     wstream.write(JSON.stringify(index[index.length-1]+"\n") );
                     wstream.write("]}");
                     wstream.end()
-                    setTimeout(temp,4000);
+                    //setTimeout(temp,4000);
 
                     //console.timeEnd("----------TOTAL TIME:--------------");
                 }

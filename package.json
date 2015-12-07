@@ -20,6 +20,8 @@
     "recursive-readdir": "*",
     "natural": "*",
     "pg": "*",
-    "async": "*"
+    "async": "*",
+    "elasticsearch":"*",
+    "xml2js":"*"
   }
 }
