@@ -22,6 +22,8 @@
     "pg": "*",
     "async": "*",
     "elasticsearch":"*",
-    "xml2js":"*"
+    "xml2js":"*",
+    "xmldoc ":"*"
+
   }
 }

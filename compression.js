@@ -6,7 +6,7 @@ function compress()
 {
     var fs=require("fs");
     var config_data =JSON.parse(fs.readFileSync("config.json",'utf-8'));
-    var index=JSON.parse(fs.readFileSync(config_data.output_file_path+"/index.txt",'utf-8')).data;
+    var index=JSON.parse(fs.readFileSync(config_data.output_file_path+"/index.txt",'utf-8'));
     var dictionary="";
     var newIndex= {dictionary:"",postings:[]};
     var step=4;
@@ -14,7 +14,7 @@ function compress()
     var position=0;
     var new_position=0;
     var j=0;
-
+console.log(index);
 
     for(var i=0;i<index.length;++i)
     {

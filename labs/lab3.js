@@ -55,7 +55,7 @@ function buildTwoIndex()
         }
     );
 }
-buildTwoIndex();
+//buildTwoIndex();
 function buildTwoIndex()
 {
     var recursive = require('recursive-readdir');

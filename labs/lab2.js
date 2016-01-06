@@ -5,7 +5,7 @@
  * Created by nazar on 05.12.2015.
  */
 var Dict = require("collections/dict");
-//buildInvertedIndex();
+buildInvertedIndex();
 function buildInvertedIndex()
 {
     var recursive = require('recursive-readdir');
@@ -50,7 +50,8 @@ function buildInvertedIndex()
                 return a[0] > b[0] ? 1 : a[0] < b[0] ? -1 : 0;
             });
             var wstream = fs.createWriteStream('index.txt');
-            wstream.write(JSON.stringify(dict.toJSON()));
+            console.log(dict.toJSON());
+        //    wstream.write(dict.toJSON());
             wstream.end();
 
 
@@ -58,7 +59,7 @@ function buildInvertedIndex()
     );
 }
 
-buildMatrix();
+//buildMatrix();
 function buildMatrix()
 {
     var recursive = require('recursive-readdir');

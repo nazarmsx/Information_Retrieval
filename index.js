@@ -1,10 +1,12 @@
 var Dict = require("collections/dict");
-
-//test();
+var fs=require('fs');
+test();
 function test() {
     var dict = new Dict();
     console.time("token_index");
-    tokenStream('F://little',
+    config_data = JSON.parse(fs.readFileSync("config.json", 'utf-8'))
+
+    tokenStream(config_data.path_to_data,
         function (token, filename) {
             token = token.toLowerCase();
             var value = dict.get(token);
@@ -87,7 +89,7 @@ function tokenStream(directory, ontoken, onend) {
 }
 
 
-readDirectory();
+//readDirectory();
 function readDirectory() {
     console.time("sync_index");
     console.time("read_files");
@@ -133,7 +135,7 @@ function readDirectory() {
             console.timeEnd("sort_index");
 
             console.time("write_index");
-            var wstream = fs.createWriteStream('F://index_.txt');
+            var wstream = fs.createWriteStream('F://index.txt');
              wstream.write(JSON.stringify(dict.toJSON()));
             wstream.end();
             console.timeEnd("write_index");
